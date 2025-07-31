@@ -8,20 +8,33 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import PlakaEklePage from "./pages/PlakaEklePage";
 import KmEklePage from "./pages/KmEklePage";
+import TestPage from "./pages/TestPage";
+
+import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/km-gecmisi" element={<KmGecmisiPage />} /> 
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/plaka-ekle" element={<PlakaEklePage />} />
-        <Route path="/km-ekle" element={<KmEklePage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Giriş yapılmadan erişilemez */}
+          <Route path="/km-gecmisi" element={<PrivateRoute element={KmGecmisiPage} />} />
+          <Route path="/plaka-ekle" element={<PrivateRoute element={PlakaEklePage} />} />
+          <Route path="/km-ekle" element={<PrivateRoute element={KmEklePage} />} />
+
+          {/* Tüm kullanıcılar erişebilir */}
+          <Route path="/dashboard" element={<PrivateRoute element={DashboardPage} />} />
+          
+          {/* Test sayfası */}
+          <Route path="/test" element={<TestPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

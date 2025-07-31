@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
+import Navigation from "../components/Navigation";
 
 function KmEklePage() {
   const navigate = useNavigate();
@@ -28,13 +29,15 @@ function KmEklePage() {
 
     if (!seciliPlaka) return;
 
-    // KM geçmişine ekle
+    const email = localStorage.getItem("email") || "bilinmiyor";
+
     const gecmisKey = `km_gecmisi_${seciliPlaka}`;
     const mevcutGecmis = JSON.parse(localStorage.getItem(gecmisKey)) || [];
 
     const yeniKayit = {
       km: yeniAldim ? "Yeni alındı (KM girilmedi)" : km,
       tarih: new Date().toLocaleString(),
+      email: email, // ✅ email bilgisi eklendi
     };
 
     mevcutGecmis.push(yeniKayit);
@@ -49,10 +52,22 @@ function KmEklePage() {
   };
 
   return (
-    <Container className="mt-5" style={{ maxWidth: "500px" }}>
-      <h3>KM Ekle / Güncelle</h3>
-      {seciliPlaka && <p><strong>Plaka:</strong> {seciliPlaka}</p>}
-      {mesaj && <Alert variant="info">{mesaj}</Alert>}
+    <>
+      <Navigation />
+      <Container className="mt-5" style={{ maxWidth: "600px" }}>
+        <h3>KM Ekle / Güncelle</h3>
+        {seciliPlaka && <p><strong>Plaka:</strong> {seciliPlaka}</p>}
+        {mesaj && <Alert variant="info">{mesaj}</Alert>}
+        
+        {/* Kullanıcı Rehberi */}
+        <div className="alert alert-info mb-3">
+          <h6>💡 Nasıl Kullanılır?</h6>
+          <ul className="mb-0">
+            <li><strong>KM Bilgisi:</strong> Aracın güncel kilometre bilgisini girin</li>
+            <li><strong>Yeni Aldım:</strong> Yeni araç aldıysanız bu kutucuğu işaretleyin</li>
+            <li><strong>Kaydet:</strong> Bilgileri kaydetmek için butona tıklayın</li>
+          </ul>
+        </div>
 
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
@@ -79,7 +94,8 @@ function KmEklePage() {
           Kaydet
         </Button>
       </Form>
-    </Container>
+      </Container>
+    </>
   );
 }
 

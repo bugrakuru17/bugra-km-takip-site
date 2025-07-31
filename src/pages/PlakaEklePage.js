@@ -1,15 +1,29 @@
 // src/pages/PlakaEklePage.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Navigation from "../components/Navigation";
 
 function PlakaEklePage() {
   const [plaka, setPlaka] = useState("");
   const [mesaj, setMesaj] = useState(null);
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+
+  useEffect(() => {
+    if (!isAdmin()) {
+      setMesaj("Bu sayfaya erişim yetkiniz yok. Sadece admin kullanıcılar plaka ekleyebilir.");
+    }
+  }, [isAdmin]);
 
   const handlePlakaEkle = (e) => {
     e.preventDefault();
+
+    if (!isAdmin()) {
+      setMesaj("Bu işlem için admin yetkisi gereklidir.");
+      return;
+    }
 
     if (plaka.trim() === "") {
       setMesaj("Plaka boş olamaz.");
@@ -36,8 +50,10 @@ function PlakaEklePage() {
   };
 
   return (
-    <Container className="mt-5" style={{ maxWidth: "400px" }}>
-      <h3>Plaka Ekle</h3>
+    <>
+      <Navigation />
+      <Container className="mt-5" style={{ maxWidth: "600px" }}>
+        <h3>Plaka Ekle</h3>
       {mesaj && (
         <Alert variant={mesaj.includes("başarı") ? "success" : "warning"}>
           {mesaj}
@@ -58,7 +74,8 @@ function PlakaEklePage() {
           Plakayı Ekle
         </Button>
       </Form>
-    </Container>
+      </Container>
+    </>
   );
 }
 

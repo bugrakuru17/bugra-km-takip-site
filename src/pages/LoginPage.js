@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Navigation from "../components/Navigation";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [sifre, setSifre] = useState("");
   const [mesaj, setMesaj] = useState(null);
@@ -11,22 +14,23 @@ function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    const kayıtlıEmail = localStorage.getItem("user_email");
-    const kayıtlıSifre = localStorage.getItem("user_password");
+    const result = login(email, sifre);
 
-    if (email === kayıtlıEmail && sifre === kayıtlıSifre) {
+    if (result.success) {
       setMesaj("Giriş başarılı! Yönlendiriliyorsunuz...");
       setTimeout(() => {
-        navigate("/plaka-ekle"); // ✅ Başarılı giriş sonrası yönlendirme
+        navigate("/dashboard");
       }, 1000);
     } else {
-      setMesaj("E-posta veya şifre hatalı.");
+      setMesaj(result.message || "E-posta veya şifre hatalı.");
     }
   };
 
   return (
-    <Container className="mt-5" style={{ maxWidth: "400px" }}>
-      <h3>Giriş Yap</h3>
+    <>
+      <Navigation />
+      <Container className="mt-5" style={{ maxWidth: "400px" }}>
+        <h3>Giriş Yap</h3>
       {mesaj && <Alert variant={mesaj.includes("başarılı") ? "success" : "danger"}>{mesaj}</Alert>}
 
       <Form onSubmit={handleLogin}>
@@ -56,7 +60,8 @@ function LoginPage() {
           Giriş Yap
         </Button>
       </Form>
-    </Container>
+      </Container>
+    </>
   );
 }
 
